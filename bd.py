@@ -92,3 +92,12 @@ def findUserId(tg_id):
     FROM users
     WHERE tg_id = ?
     ''',(tg_id,)).fetchone()
+
+arr = [['Бизнес', 'business'], ['Спорт', 'sports'], ['Технологии', 'technology'], ['Общее', 'general'],
+       ['Развлечение', 'entertainment']]
+category = cursor.execute('''SELECT * from categories''').fetchone()
+
+if category == None:
+    for i in arr:
+        cursor.execute('''INSERT INTO categories (name, value) VALUES (?, ?);''',(i[0], i[1]))
+        connect.commit()

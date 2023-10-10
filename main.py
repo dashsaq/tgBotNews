@@ -121,19 +121,20 @@ def bot_message(message):
             subAllAndDel()
             bot.reply_to(message, 'Вы отписались')
         elif message.text == 'Новости':
-            # print(11)
-            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            tg_id = message.from_user.id
-            user_id = str(findUserId(tg_id)[0])
-            userSub = findUserSubscribes(user_id)
+            userID = message.from_user.id
+            connect = sqlite3.connect('bd.db')
+            cursor = connect.cursor()
+            id = cursor.execute('SELECT id FROM users WHERE tg_id=?;', (userID,)).fetchone()
+            id = str(id[0])
+            userSub = cursor.execute('SELECT * FROM subscribes INNER JOIN categories ON categories.id = '
+                                     'subscribes.id_category WHERE id_user = ?;',(id,)).fetchall()
             i = 0
             while i < len(userSub):
-                name = types.KeyboardButton("Новости:" + "  ".join(userSub[i]))
-                markup.add(name)
+                top_headlines = newsapi.get_top_headlines(category=f'{userSub[i][4]}', language='ru', country='ru', page=1,
+                                                          page_size=1)
+                bot.send_message(message.chat.id,
+                f'категория: {userSub[i][3]}\nзаголовок: {top_headlines["articles"][0]["title"]}\n{top_headlines["articles"][0]["url"]}')
                 i = i + 1
-                back = types.KeyboardButton('Назад')
-            markup.add(back)
-            bot.reply_to(message, "Новости про:", reply_markup=markup)
 
         elif message.text.startswith("Посмотреть"):
             tg_id = message.from_user.id

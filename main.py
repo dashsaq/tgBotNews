@@ -40,6 +40,7 @@ def bot_message(message):
             i = 0
             while i < len(categories):
                 categor = types.KeyboardButton('+ ' + categories[i][0])
+                # categor = types.KeyboardButton(categories[i])
                 i = i + 1
                 back = types.KeyboardButton('Назад')
                 markup.add(categor)
